@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('menus', function (Blueprint $table) {
-            $table->id();
+            $table->id("menu_id");
             $table->string('nama_menu');
+            $table->enum('tipe', ['coffee', 'non_coffee'])->default('coffee');
             $table->text('deskripsi')->nullable;
             $table->decimal('harga', 10, 2);
             $table->string('gambar')->nullable(); // path gambar menu  

@@ -12,11 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ulasan_menus', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('menu_id')->constrained('menus')->onDelete('cascade');
-            $table->unsignedTinyInteger('rating'); // 1-5
+            $table->id("ulasanmenu_id");
+            $table->unsignedBigInteger('menu_id');
+            $table->unsignedTinyInteger('rating');
             $table->text('komentar')->nullable();
             $table->timestamps();
+
+            $table->foreign('menu_id')->references('menu_id')->on('menus')->onDelete('cascade');
         });
     }
 

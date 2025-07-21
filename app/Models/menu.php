@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class menu extends Model
 {
     use HasFactory;
-    protected $fillable = ['nama_menu', 'deskripsi', 'harga', 'gambar', 'bestseller_count'];
+    protected $primarKey = 'menu_id';
+    protected $fillable = ['nama_menu','tipe', 'deskripsi', 'harga', 'gambar', 'bestseller_count'];
 
     public function PesananDetails()
     {
-        return $this->hasMany(pesanan_detail::class);
+        return $this->hasMany(pesanandetail::class);
     }
 
     public function UlasanMenus()

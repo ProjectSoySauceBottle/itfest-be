@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pesanan_details', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('pesanan_id')->constrained('pesanans')->onDelete('cascade');
-            $table->foreignId('menu_id')->constrained('menus')->onDelete('cascade');
+        Schema::create('pesanandetails', function (Blueprint $table) {
+            $table->id("pesanandetail_id");
+            $table->unsignedBigInteger('pesanan_id');
+            $table->unsignedBigInteger('menu_id');
             $table->unsignedInteger('jumlah');
             $table->decimal('subtotal', 10, 2);
             $table->timestamps();
+
+            $table->foreign('pesanan_id')->references('pesanan_id')->on('pesanans')->onDelete('cascade');
+            $table->foreign('menu_id')->references('menu_id')->on('menus')->onDelete('cascade');
         });
     }
 
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pesanan_details');
+        Schema::dropIfExists('pesanandetails');
     }
 };

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('mejas', function (Blueprint $table) {
-            $table->id();
+            $table->id("meja_id");
             $table->string('nomor_meja')->unique();
             $table->string('qr_code_path')->nullable();// buat nyimpen file qr
             $table->timestamps();

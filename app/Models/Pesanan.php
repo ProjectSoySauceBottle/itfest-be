@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pesanan extends Model
+class pesanan extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['meja_id', 'total_harga', 'metode_bayar', 'status'];
 
     public function meja()
@@ -20,6 +23,6 @@ class Pesanan extends Model
 
     public function details()
     {
-        return $this->hasMany(pesanan_detail::class);
+        return $this->hasMany(pesanandetail::class);
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Meja extends Model
 {
+    protected $primarKey = "meja_id";
     protected $fillable = ['nomor_meja', 'qr_code_path'];
 
     public function pesanans() 
