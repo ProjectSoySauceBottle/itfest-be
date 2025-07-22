@@ -32,4 +32,4 @@ Route::apiResource('menus', MenuController::class);
 Route::apiResource('mejas', MejaController::class);
 
 // Pesanan
-Route::apiResource("pesanan", PesananController::class);
+Route::apiResource('pesanans', PesananController::class);

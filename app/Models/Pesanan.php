@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class pesanan extends Model
 {
     use HasFactory;
-
+    protected $primaryKey = 'pesanan_id';
     protected $fillable = ['meja_id', 'total_harga', 'metode_bayar', 'status'];
 
     public function meja()
@@ -16,13 +16,8 @@ class pesanan extends Model
         return $this->belongsTo(Meja::class);
     }
 
-    public function menu()
+    public function pesananDetails()
     {
-        return $this->belongsTo(menu::class);
-    }
-
-    public function details()
-    {
-        return $this->hasMany(pesanandetail::class);
+        return $this->hasMany(pesanandetail::class, 'pesanan_id', 'pesanan_id');
     }
 }

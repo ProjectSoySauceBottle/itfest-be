@@ -2,34 +2,42 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class MenuSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        $menus = [
-            ['nama' => 'Espresso', 'deskripsi' => 'Espresso single shot', 'harga' => 15000],
-            ['nama' => 'Cappuccino', 'deskripsi' => 'Espresso with steamed milk and foam', 'harga' => 20000],
-            ['nama' => 'Latte', 'deskripsi' => 'Espresso with steamed milk', 'harga' => 22000],
-            ['nama' => 'Americano', 'deskripsi' => 'Espresso with hot water', 'harga' => 18000],
-            ['nama' => 'Cold Brew', 'deskripsi' => 'Cold brewed coffee', 'harga' => 25000],
-            ['nama' => 'Mocha', 'deskripsi' => 'Espresso with chocolate and milk', 'harga' => 23000],
-        ];
-
-        foreach ($menus as $menu) {
-            DB::table('menus')->insert([
-                ...$menu,
-                'gambar' => 'menu/default.png',
-                'bestseller_count' => rand(10, 100),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
+        DB::table('menus')->insert([
+            [
+                'nama_menu' => 'Kopi Hitam',
+                'tipe' => 'coffee',
+                'deskripsi' => 'Kopi hitam tanpa campuran',
+                'harga' => 12000,
+                'gambar' => 'menu/kopi-hitam.png',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'nama_menu' => 'Cappuccino',
+                'tipe' => 'coffee',
+                'deskripsi' => 'Kopi dengan campuran cappucino',
+                'harga' => 20000,
+                'gambar' => 'menu/cappuccino.png',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'nama_menu' => 'Croissan',
+                'tipe' => 'non_coffee',
+                'deskripsi' => 'Cemilan enak pengganjal perut lapar',
+                'harga' => 18000,
+                'gambar' => 'menu/roti-bakar.png',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+        ]);
     }
 }

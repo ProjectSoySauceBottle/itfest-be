@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Meja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MejaController extends Controller
 {
@@ -16,22 +17,28 @@ class MejaController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nomor_meja' => 'required|unique:mejas,nomor_meja',
-            'qr_code' => 'nullable|file|image|max:2048', // optional upload file
+        $request->validate([
+            'nomor_meja' => 'required|string|unique:mejas,nomor_meja',
         ]);
 
-        $path = null;
-        if ($request->hasFile('qr_code')) {
-            $path = $request->file('qr_code')->store('qr_codes', 'public');
-        }
-
+        // Simpan data meja dulu
         $meja = Meja::create([
-            'nomor_meja' => $validated['nomor_meja'],
-            'qr_code_path' => $path,
+            'nomor_meja' => $request->nomor_meja,
         ]);
 
-        return response()->json($meja, 201);
+        // Isi konten QR code (bisa berupa URL atau teks)
+        $qrContent = url("/pesanan/meja/" . $meja->meja_id);
+        $qrPath = 'qr_codes/meja_' . $meja->meja_id . '.svg';
+
+        Storage::disk('public')->put($qrPath, QrCode::format('svg')->size(300)->generate($qrContent));
+
+        $meja->qr_code_path = $qrPath;
+        $meja->save();
+
+        return response()->json([
+            'message' => 'Meja berhasil ditambahkan dan QR code berhasil dibuat',
+            'data' => $meja
+        ]);
     }
 
     public function show($id)

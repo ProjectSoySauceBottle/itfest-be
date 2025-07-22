@@ -15,10 +15,9 @@ return new class extends Migration
             $table->id("menu_id");
             $table->string('nama_menu');
             $table->enum('tipe', ['coffee', 'non_coffee'])->default('coffee');
-            $table->text('deskripsi')->nullable;
+            $table->text('deskripsi')->nullable();
             $table->decimal('harga', 10, 2);
             $table->string('gambar')->nullable(); // path gambar menu  
-            $table->unsignedInteger('bestseller_count')->default(0);
             $table->timestamps();
         });
     }

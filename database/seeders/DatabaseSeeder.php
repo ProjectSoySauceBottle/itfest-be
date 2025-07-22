@@ -13,17 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // panggil meja dan menu seeder 
+        $this->call([
+            MenuSeeder::class,
+        ]);
+
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-
-            // panggil meja dan menu seeder 
-            $this->call([
-                MejaSeeder::class,
-                MenuSeeder::class,
-            ])
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
     }
 }

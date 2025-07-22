@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class menu extends Model
 {
     use HasFactory;
-    protected $primarKey = 'menu_id';
+    protected $primaryKey = 'menu_id';
     protected $fillable = ['nama_menu','tipe', 'deskripsi', 'harga', 'gambar', 'bestseller_count'];
 
     public function PesananDetails()

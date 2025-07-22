@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('pesanans', function (Blueprint $table) {
             $table->id("pesanan_id");
             $table->unsignedBigInteger('meja_id');
-            $table->unsignedBigInteger('menu_id');
             $table->bigInteger('jumlah_pesanan')->default(0);
             $table->decimal('total_harga', 10, 2)->default(0);
             $table->enum('metode_bayar', ['cash', 'cashless']);
@@ -23,7 +22,6 @@ return new class extends Migration
 
             // Foreignkeys dengan key eksplisit
             $table->foreign('meja_id')->references('meja_id')->on('mejas')->onDelete('cascade');
-            $table->foreign('menu_id')->references('menu_id')->on('menus')->onDelete('cascade');
         });
     }
 
