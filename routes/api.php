@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\MejaController;
 use App\Http\Controllers\Api\PesananController;
+use App\Http\Controllers\Api\StatistikController;
+use App\Http\Controllers\Api\MenuRekomendasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,3 +35,10 @@ Route::apiResource('mejas', MejaController::class);
 
 // Pesanan
 Route::apiResource('pesanans', PesananController::class);
+
+// Machine Learning 
+Route::get('/statistik/menu', [StatistikController::class, 'menu']);
+Route::get('/rekomendasi-menu', [StatistikController::class, 'rekomendasi']);
+
+// Menu Rekomendasi dari Flask
+Route::get('/menu/rekomendasi', [MenuRekomendasiController::class, 'index']);
