@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class menu extends Model
+class Menu extends Model
 {
     use HasFactory;
     protected $primaryKey = 'menu_id';
-    protected $fillable = ['nama_menu','tipe', 'deskripsi', 'harga', 'gambar', 'bestseller_count'];
+    protected $fillable = ['nama_menu','tipe', 'deskripsi', 'harga', 'bestseller_count'];
 
     public function PesananDetails()
     {

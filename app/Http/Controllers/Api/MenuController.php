@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\menu;
+use App\Models\Menu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -38,17 +38,20 @@ class MenuController extends Controller
     }
 
     // Tampilkan satu menu
-    public function show(Menu $menu)
+    public function show($id)
     {
-        return $menu;
+        $meja = Menu::findOrFail($id);
+        return response()->json($meja);
     }
 
     // Update menu
-    public function update(Request $request, Menu $menu)
+    public function update(Request $request, $id)
     {
+        $menu = Menu::findOrFail($id);
+
         $validated = $request->validate([
             'nama_menu' => 'sometimes|string|max:255',
-            'tipe' => 'sometimes|in:coffee,non_coffee',
+            'tipe' => 'sometimes|in:coffee,non_coffee,snack',
             'deskripsi' => 'nullable|string',
             'harga' => 'sometimes|numeric|min:0',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -56,15 +59,26 @@ class MenuController extends Controller
 
         if ($request->hasFile('gambar')) {
             // Hapus gambar lama jika ada
-            if ($menu->gambar) {
-                Storage::delete('public/menus/' . $menu->gambar);
+            if ($menu->gambar_path) {
+                Storage::disk('public')->delete($menu->gambar_path);
             }
-            $path = $request->file('gambar')->store('public/menus');
-            $validated['gambar'] = basename($path);
+
+            // Simpan gambar baru
+            $path = $request->file('gambar')->store('menus', 'public');
+            $menu->gambar_path = $path;
         }
 
-        $menu->update($validated);
-        return response()->json($menu);
+        // Update data lainnya
+        $menu->nama_menu = $validated['nama_menu'];
+        $menu->tipe = $validated['tipe'];
+        $menu->deskripsi = $validated['deskripsi'];
+        $menu->harga = $validated['harga'];
+        $menu->save();
+
+        return response()->json([
+            'message' => 'Data menu berhasil diperbarui',
+            'data' => $menu
+        ]);
     }
 
     // Hapus menu
