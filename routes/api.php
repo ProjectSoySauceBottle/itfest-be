@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PesananController;
 use App\Http\Controllers\Api\StatistikController;
 use App\Http\Controllers\Api\MenuRekomendasiController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Api\UploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,9 @@ Route::get('/menus/{id}', [MenuController::class, 'show']);
 
 Route::get('/mejas', [MejaController::class, 'index']);
 Route::get('/mejas/{id}', [MejaController::class, 'show']);
+
+// Upload Gambar
+Route::post('/upload-image', [UploadController::class, 'upload']);
 
 // Public create pesanan
 Route::post('/pesanans', [PesananController::class, 'store']);

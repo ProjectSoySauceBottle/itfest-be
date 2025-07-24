@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum('tipe', ['coffee', 'non_coffee', 'snack'])->default('coffee');
             $table->text('deskripsi')->nullable();
             $table->string('harga', 10);
-            // $table->string('gambar')->nullable(); // path gambar menu  
+            $table->string('gambar')->nullable(); // path gambar menu  
             $table->timestamps();
         });
     }
