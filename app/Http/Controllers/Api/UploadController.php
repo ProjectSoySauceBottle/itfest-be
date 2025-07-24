@@ -20,7 +20,7 @@ class UploadController extends Controller
 
         return response()->json([
             'path' => $path,
-            'url' => asset($url),
+            'url' => url(asset('storage/'.$url)),
         ]);
     }
 }

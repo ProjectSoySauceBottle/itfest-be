@@ -25,14 +25,17 @@ class MenuController extends Controller
             'harga' => 'required|numeric',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|image|max:2048', // gambar opsional
+            'estimasi_pembuatan' => 'required|integer|min:1'
         ]);
+
+        $menu = new Menu($validated);
 
         if ($request->hasFile('gambar')) {
             $path = $request->file('gambar')->store('menus', 'public'); // simpan di storage/app/public/menus
             $validated['gambar'] = $path;
         }
 
-        $menu = Menu::create($validated);
+        $menu->save();
 
         return response()->json($menu, 201);
     }

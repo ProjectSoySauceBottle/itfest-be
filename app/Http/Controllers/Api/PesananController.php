@@ -29,6 +29,7 @@ class PesananController extends Controller
             'items' => 'required|array|min:1',
             'items.*.menu_id' => 'required|exists:menus,menu_id',
             'items.*.jumlah' => 'required|integer|min:1',
+            'status' => 'dalam_antrian'
         ]);
 
         DB::beginTransaction();
@@ -118,7 +119,7 @@ class PesananController extends Controller
 
             return response()->json([
                 'message' => 'Pembayaran cashless berhasil.',
-                'qris' => $qrisLink,
+                'qris' => url(asset('storage/'.$qrisLink)),
                 'status' => 'paid',
             ]);
         }
@@ -151,6 +152,42 @@ class PesananController extends Controller
         $pesanan->save();
 
         return response()->json(['message' => 'Pembayaran berhasil dikonfirmasi oleh kasir']);
+    }
+
+    public function estimasi($id)
+    {
+        // Ambil pesanan ini beserta menu di detail
+        $pesanan = Pesanan::with('pesanandetails.menu')->where('pesanan_id', $id)->firstOrFail();
+
+        // Ambil semua pesanan lain selain ini
+        $pesananLain = Pesanan::where('pesanan_id', '!=', $id)
+            ->with('pesanandetails.menu')
+            ->get();
+
+        $totalEstimasi = 0;
+
+        foreach ($pesanan->pesanandetails as $item) {
+            $menu = $item->menu;
+
+            $jumlahAntrean = 0;
+
+            foreach ($pesananLain as $pesananAntrean) {
+                foreach ($pesananAntrean->pesanandetails as $itemAntrean) {
+                    if ($itemAntrean->menu_id == $menu->menu_id) {
+                        $jumlahAntrean += $itemAntrean->jumlah;
+                    }
+                }
+            }
+
+            // Hitung estimasi waktu: antrean + pesanan ini × estimasi_pembuatan
+            $estimasi = ($jumlahAntrean + $item->jumlah) * $menu->estimasi_pembuatan;
+            $totalEstimasi += $estimasi;
+        }
+
+        return response()->json([
+            'pesanan_id' => $pesanan->pesanan_id,
+            'estimasi_dalam_menit' => $totalEstimasi
+        ]);
     }
 
     public function show($id)

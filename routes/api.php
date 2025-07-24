@@ -45,6 +45,9 @@ Route::post('/upload-image', [UploadController::class, 'upload']);
 // Public create pesanan
 Route::post('/pesanans', [PesananController::class, 'store']);
 
+// Estimasi Pesanan Sampai
+Route::get('/pesanans/{id}/estimasi', [PesananController::class, 'estimasi']);
+
 // ML-based recommendation
 Route::get('/statistik/menu', [StatistikController::class, 'menu']);
 Route::get('/rekomendasi-menu', [StatistikController::class, 'rekomendasi']);
