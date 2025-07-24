@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigInteger('jumlah_pesanan')->default(0);
             $table->decimal('total_harga', 10, 2)->default(0);
             $table->enum('metode_bayar', ['cash', 'cashless']);
-            $table->enum('status', ['pending', 'dibayar', 'selesai'])->default('pending');
+            $table->enum('status_bayar', ['pending', 'paid'])->default('pending');
             $table->timestamps();
 
             // Foreignkeys dengan key eksplisit

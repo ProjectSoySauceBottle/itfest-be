@@ -46,6 +46,12 @@ Route::get('/statistik/menu', [StatistikController::class, 'menu']);
 Route::get('/rekomendasi-menu', [StatistikController::class, 'rekomendasi']);
 Route::get('/menu/rekomendasi', [MenuRekomendasiController::class, 'index']);
 
+// Payment
+Route::post('/pesanans/{id}/bayar', [PesananController::class, 'bayar']);
+Route::get('/pesanan/{id}/qr-cash', [PesananController::class, 'generateCashQr'])->name('pesanan.qrCash');
+Route::get('/pesanans/{id}/konfirmasi-kasir', [PesananController::class, 'konfirmasiKasir'])->name('konfirmasi.kasir');
+
+// Auth (Login)
 Route::middleware('auth:sanctum')->group(function () {
 
     // CRUD menu (admin)
