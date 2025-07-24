@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\MejaController;
 use App\Http\Controllers\Api\PesananController;
 use App\Http\Controllers\Api\StatistikController;
 use App\Http\Controllers\Api\MenuRekomendasiController;
+use App\Http\Controllers\Auth\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,18 +28,43 @@ Route::get('/', function () {
     return response()->json(['message' => 'API Only']);
 });
 
-// Menu
-Route::apiResource('menus', MenuController::class);
+// Auth (login)
+Route::post('/admin/login', [AuthController::class, 'login']);
 
-// Meja
-Route::apiResource('mejas', MejaController::class);
+// Public View (menu, meja)
+Route::get('/menus', [MenuController::class, 'index']);
+Route::get('/menus/{id}', [MenuController::class, 'show']);
 
-// Pesanan
-Route::apiResource('pesanans', PesananController::class);
+Route::get('/mejas', [MejaController::class, 'index']);
+Route::get('/mejas/{id}', [MejaController::class, 'show']);
 
-// Machine Learning 
+// Public create pesanan
+Route::post('/pesanans', [PesananController::class, 'store']);
+
+// ML-based recommendation
 Route::get('/statistik/menu', [StatistikController::class, 'menu']);
 Route::get('/rekomendasi-menu', [StatistikController::class, 'rekomendasi']);
-
-// Menu Rekomendasi dari Flask
 Route::get('/menu/rekomendasi', [MenuRekomendasiController::class, 'index']);
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // CRUD menu (admin)
+    Route::post('/menus', [MenuController::class, 'store']);
+    Route::put('/menus/{id}', [MenuController::class, 'update']);
+    Route::delete('/menus/{id}', [MenuController::class, 'destroy']);
+
+    // CRUD meja (admin)
+    Route::post('/mejas', [MejaController::class, 'store']);
+    Route::put('/mejas/{id}', [MejaController::class, 'update']);
+    Route::delete('/mejas/{id}', [MejaController::class, 'destroy']);
+
+    // View pesanan (admin)
+    Route::get('/pesanans', [PesananController::class, 'index']);
+    Route::get('/pesanans/{id}', [PesananController::class, 'show']);
+
+    // (Opsional) Admin create/update/delete pesanan
+    Route::put('/pesanans/{id}', [PesananController::class, 'update']);
+    Route::delete('/pesanans/{id}', [PesananController::class, 'destroy']);
+});
+
+
