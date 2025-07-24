@@ -24,16 +24,11 @@ class MenuController extends Controller
             'tipe' => 'required|in:coffee,non_coffee',
             'harga' => 'required|numeric',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|image|max:2048', // gambar opsional
+            'gambar' => 'nullable|string', // gambar opsional
             'estimasi_pembuatan' => 'required|integer|min:1'
         ]);
 
         $menu = new Menu($validated);
-
-        if ($request->hasFile('gambar')) {
-            $path = $request->file('gambar')->store('menus', 'public'); // simpan di storage/app/public/menus
-            $validated['gambar'] = $path;
-        }
 
         $menu->save();
 
@@ -57,25 +52,15 @@ class MenuController extends Controller
             'tipe' => 'sometimes|in:coffee,non_coffee,snack',
             'deskripsi' => 'nullable|string',
             'harga' => 'sometimes|numeric|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'gambar' => 'nullable|string',
         ]);
-
-        if ($request->hasFile('gambar')) {
-            // Hapus gambar lama jika ada
-            if ($menu->gambar_path) {
-                Storage::disk('public')->delete($menu->gambar_path);
-            }
-
-            // Simpan gambar baru
-            $path = $request->file('gambar')->store('menus', 'public');
-            $menu->gambar_path = $path;
-        }
 
         // Update data lainnya
         $menu->nama_menu = $validated['nama_menu'];
         $menu->tipe = $validated['tipe'];
         $menu->deskripsi = $validated['deskripsi'];
         $menu->harga = $validated['harga'];
+        $menu->gambar = $validated['gambar'];
         $menu->save();
 
         return response()->json([
