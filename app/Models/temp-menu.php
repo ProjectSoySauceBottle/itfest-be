@@ -18,6 +18,6 @@ class Menu extends Model
 
     public function UlasanMenus()
     {
-        return $this->hasMany(ulasan_menu::class);
+        return $this->hasMany(UlasanMenu::class);
     }
 }
