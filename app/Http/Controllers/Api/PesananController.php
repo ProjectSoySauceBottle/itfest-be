@@ -19,7 +19,7 @@ class PesananController extends Controller
 {
     public function index()
     {
-        $data = Pesanan::with('menu', 'meja')->get();
+        $data = Pesanan::with('menu', 'meja', 'pesananDetails.menu')->get();
         return response()->json($data);
     }
 
