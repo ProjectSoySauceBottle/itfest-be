@@ -10,7 +10,7 @@ class Pesanan extends Model
     use HasFactory;
     protected $primaryKey = 'pesanan_id';
 
-    protected $fillable = ['meja_id', 'jumlah_pesanan', 'total_harga', 'metode_bayar', 'status_bayar'];
+    protected $fillable = ['meja_id', 'jumlah_pesanan', 'total_harga', 'metode_bayar', 'status_bayar', 'status'];
 
     public function meja()
     {
