@@ -27,12 +27,12 @@ class MejaController extends Controller
         ]);
 
         // Isi konten QR code (bisa berupa URL atau teks)
-        $qrContent = url("/pesanan/meja/" . $meja->meja_id);
+        $qrContent = env('FRONTEND_URL') . '?meja=' . $meja->meja_id;
         $qrPath = 'qr_codes/meja_' . $meja->meja_id . '.svg';
 
         Storage::disk('public')->put($qrPath, QrCode::format('svg')->size(300)->generate($qrContent));
 
-        $meja->qr_code_path = $qrPath;
+        $meja->qr_code_path = url(asset('storage/' . $qrPath));
         $meja->save();
 
         return response()->json([
