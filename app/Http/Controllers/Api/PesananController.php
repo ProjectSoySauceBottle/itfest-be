@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Meja;
 use Illuminate\Http\Request;
 use App\Models\Pesanan;
 use App\Models\Menu;
@@ -282,5 +283,12 @@ class PesananController extends Controller
         $pesanan = Pesanan::findOrFail($id);
         $pesanan->delete();
         return response()->json(['message' => 'Pesanan dihapus']);
+    }
+
+    public function order_by_table($table_number)
+    {
+        $meja = Meja::findOrFail($table_number);
+        $pesanan = Pesanan::where('meja_id', $meja->meja_id)->with('pesananDetails.menu')->get();
+        return response()->json($pesanan);
     }
 }

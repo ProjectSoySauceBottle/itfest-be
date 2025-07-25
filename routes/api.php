@@ -46,6 +46,9 @@ Route::post('/upload-image', [UploadController::class, 'upload']);
 // Public create pesanan
 Route::post('/pesanans', [PesananController::class, 'store']);
 
+// public get pesanan by meja
+Route::get('/pesanans/meja/{table_number}', [PesananController::class, 'order_by_table']);
+
 // Estimasi Pesanan Sampai
 Route::get('/pesanans/{id}/estimasi', [PesananController::class, 'estimasi']);
 
