@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class PesananController extends Controller
 {
@@ -90,6 +92,70 @@ class PesananController extends Controller
         }
     }
 
+    public function cashless_payment(Request $request)
+    {
+        $order_id = 'ORDER-' . time();
+
+        $pesanan = Pesanan::create([
+            'meja_id' => $request->meja_id,
+            'jumlah_pesanan' => collect($request->items)->sum('jumlah'),
+            'total_harga' => $request->total_harga,
+            'metode_bayar' => $request->metode_bayar,
+            'status_bayar' => 'pending',
+        ]);
+
+        foreach ($request->items as $item) {
+            $menu = Menu::find($item['menu_id']);
+
+            Pesanandetail::create([
+                'pesanan_id' => $pesanan->pesanan_id,
+                'menu_id' => $item['menu_id'],
+                'jumlah_pesanan' => $item['jumlah'],
+                'harga_satuan' => $menu->harga,
+                'total_harga' => $menu->harga * $item['jumlah'],
+            ]);
+        }
+
+        // 3. Buat Snap Token Midtrans
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.sanitize');
+        Config::$is3ds = config('midtrans.enable_3ds');
+
+        $payload = [
+            'transaction_details' => [
+                'order_id' => $order_id,
+                'gross_amount' => $request->total_harga,
+            ],
+            'customer_details' => [
+                'nomor_meja' => 'Meja ' . $request->meja_id,
+            ],
+        ];
+
+        try {
+            $snapToken = Snap::getSnapToken($payload);
+
+            return response()->json([
+                'success' => true,
+                'snap' => $snapToken,
+                'order_id' => $order_id,
+                'pesanan_id' => $pesanan->pesanan_id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function update_status(Request $request, $id)
+    {
+        $pesanan = Pesanan::findOrFail($id);
+        $pesanan->status_bayar = $request->status_bayar;
+        $pesanan->save();
+
+        return response()->json(['message' => 'Status updated']);
+    }
+
+
     public function bayar(Request $request, $id)
     {
         $pesanan = Pesanan::findOrFail($id);
@@ -119,7 +185,7 @@ class PesananController extends Controller
 
             return response()->json([
                 'message' => 'Pembayaran cashless berhasil.',
-                'qris' => url(asset('storage/'.$qrisLink)),
+                'qris' => url(asset('storage/' . $qrisLink)),
                 'status' => 'paid',
             ]);
         }
