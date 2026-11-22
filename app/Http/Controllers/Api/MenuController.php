@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Menu;
+use App\Support\Media;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
@@ -19,9 +19,18 @@ class MenuController extends Controller
     // Simpan menu baru
     public function store(Request $request)
     {
+        // The admin form sends the human label from the category dropdown
+        // ("Coffee", "Non Coffee", "Snack") and does not know about
+        // estimasi_pembuatan, so both are normalised here instead of rejecting
+        // a payload the UI itself produces.
+        $request->merge([
+            'tipe' => $this->normaliseTipe($request->input('tipe')),
+            'estimasi_pembuatan' => $request->input('estimasi_pembuatan') ?: 5,
+        ]);
+
         $validated = $request->validate([
             'nama_menu' => 'required|string|max:255',
-            'tipe' => 'required|in:coffee,non_coffee',
+            'tipe' => 'required|in:coffee,non_coffee,snack',
             'harga' => 'required|numeric',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|string', // gambar opsional
@@ -33,6 +42,20 @@ class MenuController extends Controller
         $menu->save();
 
         return response()->json($menu, 201);
+    }
+
+    /**
+     * Map a category label onto the value the menus table stores.
+     */
+    private function normaliseTipe(?string $tipe): string
+    {
+        $key = strtolower(str_replace([' ', '-'], '_', trim((string) $tipe)));
+
+        return match ($key) {
+            'non_coffee', 'noncoffee', 'noncoffe' => 'non_coffee',
+            'snack', 'snacks', 'makanan' => 'snack',
+            default => 'coffee',
+        };
     }
 
     // Tampilkan satu menu
@@ -47,6 +70,12 @@ class MenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
 
+        // Same normalisation as store(): the edit form also posts the dropdown
+        // label ("Coffee"/"Non Coffee"/"Snack") rather than the stored value.
+        if ($request->has('tipe')) {
+            $request->merge(['tipe' => $this->normaliseTipe($request->input('tipe'))]);
+        }
+
         $validated = $request->validate([
             'nama_menu' => 'sometimes|string|max:255',
             'tipe' => 'sometimes|in:coffee,non_coffee,snack',
@@ -55,12 +84,11 @@ class MenuController extends Controller
             'gambar' => 'nullable|string',
         ]);
 
-        // Update data lainnya
-        $menu->nama_menu = $validated['nama_menu'];
-        $menu->tipe = $validated['tipe'];
-        $menu->deskripsi = $validated['deskripsi'];
-        $menu->harga = $validated['harga'];
-        $menu->gambar = $validated['gambar'];
+        // Only assign the keys that were actually sent: `sometimes` rules leave
+        // the others out of $validated, and reading them blindly throws.
+        foreach ($validated as $field => $value) {
+            $menu->{$field} = $value;
+        }
         $menu->save();
 
         return response()->json([
@@ -70,12 +98,16 @@ class MenuController extends Controller
     }
 
     // Hapus menu
-    public function destroy(Menu $menu)
+    public function destroy($id)
     {
-        if ($menu->gambar) {
-            Storage::delete('public/menus/' . $menu->gambar);
-        }
+        // Take the id explicitly: the route parameter is {id}, so implicit
+        // model binding on a `Menu $menu` parameter never matches and Laravel
+        // injects an empty model, making delete() a silent no-op.
+        $menu = Menu::findOrFail($id);
+
+        Media::delete($menu->gambar);
         $menu->delete();
+
         return response()->json(['message' => 'Menu deleted']);
     }
 }

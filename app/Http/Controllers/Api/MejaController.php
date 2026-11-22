@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Meja;
+use App\Support\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -28,11 +29,13 @@ class MejaController extends Controller
 
         // Isi konten QR code (bisa berupa URL atau teks)
         $qrContent = env('FRONTEND_URL') . '?meja=' . $meja->meja_id;
-        $qrPath = 'qr_codes/meja_' . $meja->meja_id . '.svg';
+        // PNG, not SVG: the dashboard renders these through next/image, whose
+        // optimiser refuses SVG and leaves the table with an empty cell.
+        $qrPath = 'qr_codes/meja_' . $meja->meja_id . '.png';
 
-        Storage::disk('public')->put($qrPath, QrCode::format('svg')->size(300)->generate($qrContent));
+        Storage::disk(Media::DISK)->put($qrPath, QrCode::format('png')->size(300)->generate($qrContent));
 
-        $meja->qr_code_path = url(asset('storage/' . $qrPath));
+        $meja->qr_code_path = Media::url($qrPath);
         $meja->save();
 
         return response()->json([
@@ -57,11 +60,8 @@ class MejaController extends Controller
         ]);
 
         if ($request->hasFile('qr_code')) {
-            if ($meja->qr_code_path) {
-                Storage::disk('public')->delete($meja->qr_code_path);
-            }
-            $path = $request->file('qr_code')->store('qr_codes', 'public');
-            $meja->qr_code_path = $path;
+            Media::delete($meja->qr_code_path);
+            $meja->qr_code_path = Media::store($request->file('qr_code'), 'qr_codes');
         }
 
         $meja->nomor_meja = $validated['nomor_meja'];
@@ -73,9 +73,7 @@ class MejaController extends Controller
     public function destroy($id)
     {
         $meja = Meja::findOrFail($id);
-        if ($meja->qr_code_path) {
-            Storage::disk('public')->delete($meja->qr_code_path);
-        }
+        Media::delete($meja->qr_code_path);
         $meja->delete();
         return response()->json(['message' => 'Meja deleted']);
     }

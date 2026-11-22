@@ -61,8 +61,9 @@ class PesananController extends Controller
                 PesananDetail::create([
                     'pesanan_id' => $pesanan->pesanan_id,
                     'menu_id' => $menu->menu_id,
-                    'jumlah' => $item['jumlah'],
-                    'subtotal' => $menu->harga * $item['jumlah']
+                    'jumlah_pesanan' => $item['jumlah'],
+                    'harga_satuan' => $menu->harga,
+                    'total_harga' => $menu->harga * $item['jumlah'],
                 ]);
             }
 
@@ -201,10 +202,12 @@ class PesananController extends Controller
         // URL untuk dikonfirmasi oleh kasir
         $url = route('konfirmasi.kasir', ['id' => $pesanan->pesanan_id]);
 
-        // Buat QR code dari URL itu
-        $qrImage = QrCode::format('jpg')->size(300)->generate($url);
+        // Buat QR code dari URL itu.
+        // simple-qrcode only supports svg/eps/png, and png needs the imagick
+        // extension. SVG needs neither, so it is the format that always works.
+        $qrImage = QrCode::format('svg')->size(300)->generate($url);
 
-        return response($qrImage)->header('Content-Type', 'image/jpg');
+        return response($qrImage)->header('Content-Type', 'image/svg+xml');
     }
 
     public function konfirmasiKasir($id)

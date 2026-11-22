@@ -19,7 +19,15 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    /*
+     | Browsers reject Access-Control-Allow-Origin: * together with
+     | Access-Control-Allow-Credentials: true, so the frontend origins must be
+     | listed explicitly. CORS_ALLOWED_ORIGINS is a comma separated list.
+     */
+    'allowed_origins' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('CORS_ALLOWED_ORIGINS', 'http://localhost:3000'))
+    ))),
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +37,7 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    // Required because the frontend sends cookies (withCredentials: true).
+    'supports_credentials' => (bool) env('CORS_SUPPORTS_CREDENTIALS', true),
 
 ];

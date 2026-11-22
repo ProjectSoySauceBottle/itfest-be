@@ -30,6 +30,34 @@ return [
 
     'disks' => [
 
+        /*
+        | Menu images and table QR codes. Switch driver with MEDIA_DRIVER:
+        | "local" (development, served from storage/app/public) or "s3" for any
+        | S3-compatible bucket such as Supabase Storage.
+        */
+        'media' => env('MEDIA_DRIVER', 'local') === 's3'
+            ? [
+                'driver' => 's3',
+                'key' => env('SUPABASE_S3_KEY'),
+                'secret' => env('SUPABASE_S3_SECRET'),
+                'token' => env('SUPABASE_S3_TOKEN'),
+                'region' => env('SUPABASE_S3_REGION', 'ap-southeast-1'),
+                'bucket' => env('SUPABASE_S3_BUCKET', 'uploads'),
+                'endpoint' => env('SUPABASE_S3_ENDPOINT'),
+                'use_path_style_endpoint' => true,
+                'url' => env('SUPABASE_S3_URL'),
+                'visibility' => 'public',
+                'throw' => false,
+                'report' => false,
+            ]
+            : [
+                'driver' => 'local',
+                'root' => storage_path('app/public'),
+                'url' => rtrim(env('APP_URL', 'http://localhost:8000'), '/') . '/storage',
+                'visibility' => 'public',
+                'throw' => false,
+            ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),

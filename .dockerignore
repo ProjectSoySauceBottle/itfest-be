@@ -1,0 +1,25 @@
+# Docker build context exclusions.
+# NOTE: without this file `COPY . .` overwrites the --no-dev vendor directory
+# installed above with the local one, which contains dev-only providers
+# (laravel/sail) and breaks boot with "Class SailServiceProvider not found".
+.git
+.github
+.vercel
+node_modules
+vendor
+.env
+.env.*
+!.env.example
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/public/*
+bootstrap/cache/*.php
+public/storage
+tests
+phpunit.xml
+README.md
+rekomendasi_api
+.idea
+.vscode

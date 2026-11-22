@@ -25,6 +25,14 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
 
+    /*
+    | Optional Python recommender (see rekomendasi_api/). Leave the URL empty
+    | to skip it entirely; the API then ranks menus by units sold in SQL.
+    */
+    'rekomendasi' => [
+        'url' => env('REKOMENDASI_API_URL', ''),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
