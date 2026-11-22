@@ -9,15 +9,15 @@ class Menu extends Model
 {
     use HasFactory;
     protected $primaryKey = 'menu_id';
-    protected $fillable = ['nama_menu','tipe', 'deskripsi', 'harga', 'gambar', 'bestseller_count'];
+    protected $fillable = ['nama_menu', 'tipe', 'deskripsi', 'harga', 'gambar', 'bestseller_count'];
 
     public function PesananDetails()
     {
-        return $this->hasMany(pesanandetail::class);
+        return $this->hasMany(PesananDetail::class);
     }
 
     public function UlasanMenus()
     {
-        return $this->hasMany(ulasan_menu::class);
+        return $this->hasMany(UlasanMenu::class);
     }
 }

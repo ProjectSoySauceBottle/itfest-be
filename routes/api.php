@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\StatistikController;
 use App\Http\Controllers\Api\MenuRekomendasiController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Api\UploadController;
+use App\Http\Controllers\MidtransWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,9 @@ Route::post('/upload-image', [UploadController::class, 'upload']);
 // Public create pesanan
 Route::post('/pesanans', [PesananController::class, 'store']);
 
+// public get pesanan by meja
+Route::get('/pesanans/meja/{table_number}', [PesananController::class, 'order_by_table']);
+
 // Estimasi Pesanan Sampai
 Route::get('/pesanans/{id}/estimasi', [PesananController::class, 'estimasi']);
 
@@ -57,6 +61,10 @@ Route::get('/menu/rekomendasi', [MenuRekomendasiController::class, 'index']);
 Route::post('/pesanans/{id}/bayar', [PesananController::class, 'bayar']);
 Route::get('/pesanan/{id}/qr-cash', [PesananController::class, 'generateCashQr'])->name('pesanan.qrCash');
 Route::get('/pesanans/{id}/konfirmasi-kasir', [PesananController::class, 'konfirmasiKasir'])->name('konfirmasi.kasir');
+
+// Payment Cashless
+Route::post('/pesanans/cashless_payment', [PesananController::class, 'cashless_payment']);
+Route::post('/pesanans/{id}/update-status', [PesananController::class, 'update_status']);
 
 // Auth (Login)
 Route::middleware('auth:sanctum')->group(function () {
@@ -79,5 +87,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/pesanans/{id}', [PesananController::class, 'update']);
     Route::delete('/pesanans/{id}', [PesananController::class, 'destroy']);
 });
-
-

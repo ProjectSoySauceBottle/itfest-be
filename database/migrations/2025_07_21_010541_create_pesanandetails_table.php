@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id("pesanandetail_id");
             $table->unsignedBigInteger('pesanan_id');
             $table->unsignedBigInteger('menu_id');
-            $table->unsignedInteger('jumlah');
-            $table->decimal('subtotal', 10, 2);
+            $table->integer('jumlah_pesanan');
+            $table->decimal('harga_satuan', 10, 2);
+            $table->decimal('total_harga', 10, 2);
             $table->timestamps();
 
             $table->foreign('pesanan_id')->references('pesanan_id')->on('pesanans')->onDelete('cascade');
